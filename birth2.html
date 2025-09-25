@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎉 Birthday Surprise 🎂</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top, #1a1a2e, #000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 5em;
+      text-align: center;
+      text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff; }
+      to { text-shadow: 0 0 30px #00ffff, 0 0 60px #ff00ff; }
+    }
+
+    #tagline {
+      font-size: 1.5em;
+      margin-top: 10px;
+      opacity: 0.8;
+    }
+
+    .balloon {
+      position: absolute;
+      font-size: 3rem;
+      animation: float 8s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); }
+      100% { transform: translateY(-120vh) rotate(360deg); }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 3em; }
+      #tagline { font-size: 1em; }
+      .balloon { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎂 Happy Birthday! 🎉</h1>
+  <div id="tagline">Wishing you endless joy ✨</div>
+  <canvas id="confetti"></canvas>
+
+  <script>
+    const balloons = ["🎈","🎉","✨","🥳"];
+    function createBalloon() {
+      const b = document.createElement("div");
+      b.className = "balloon";
+      b.innerText = balloons[Math.floor(Math.random()*balloons.length)];
+      b.style.left = Math.random() * window.innerWidth + "px";
+      b.style.animationDuration = (5 + Math.random()*5) + "s";
+      document.body.appendChild(b);
+      setTimeout(()=> b.remove(), 10000);
+    }
+    setInterval(createBalloon, 1200);
+
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    let confetti = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function createConfetti(x,y) {
+      for (let i=0;i<30;i++){
+        confetti.push({
+          x: x !== undefined ? x : Math.random()*canvas.width,
+          y: y !== undefined ? y : Math.random()*canvas.height,
+          dx: Math.random()*4-2,
+          dy: Math.random()*-4-2,
+          size: Math.random()*6+2,
+          color: `hsl(${Math.random()*360},100%,50%)`,
+          life: 100
+        });
+      }
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      confetti.forEach((p,i)=>{
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x,p.y,p.size,p.size);
+        p.x+=p.dx;
+        p.y+=p.dy;
+        p.dy+=0.05;
+        p.life--;
+        if(p.life<=0) confetti.splice(i,1);
+      });
+      requestAnimationFrame(drawConfetti);
+    }
+    drawConfetti();
+
+    setInterval(() => createConfetti(), 500);
+  </script>
+</body>
+</html>
